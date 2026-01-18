@@ -1,10 +1,7 @@
-from setuptools import find_packages, setup 
+from setuptools import find_packages, setup
 
 setup(
-    name="rag-llm",
-    version="0.1.0",
-    author="Srishti Singh",
-    author_email="srishtis1013@gmail.com",
+    name="medical_chatbot",
+    version="0.0.1",
     packages=find_packages(),
-    install_requires=[]
 )

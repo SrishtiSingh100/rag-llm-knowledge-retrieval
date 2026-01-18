@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0d1117; /* Dark background */
+            color: #e5e5e5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #58a6ff;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 5px #000;
+        }
+
+        /* --- Chat Container --- */
+        #chat-container {
+            width: 100%;
+            max-width: 700px;
+            background: #161b22;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid #58a6ff; /* glowing border effect */
+        }
+
+        #chat {
+            height: 500px;
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background: linear-gradient(145deg, #161b22, #0d1117);
+        }
+
+        /* --- Messages --- */
+        .message {
+            margin-bottom: 15px;
+            padding: 14px 20px;
+            border-radius: 20px;
+            max-width: 75%;
+            word-wrap: break-word;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .user {
+            background: #1e1e2f;
+            color: #ffd166;
+            align-self: flex-end;
+            border: 1px solid #ffd166;
+        }
+
+        .user:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(255, 209, 102, 0.5);
+        }
+
+        .bot {
+            background: #0f3d3e;
+            color: #06d6a0;
+            align-self: flex-start;
+            border: 1px solid #06d6a0;
+        }
+
+        .bot:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(6, 214, 160, 0.5);
+        }
+
+        /* --- Input Section --- */
+        #input-container {
+            display: flex;
+            border-top: 1px solid #333;
+            background: #0d1117;
+        }
+
+        #question {
+            flex-grow: 1;
+            border: none;
+            padding: 18px 20px;
+            font-size: 16px;
+            outline: none;
+            background: #161b22;
+            color: #e5e5e5;
+            border-radius: 0;
+        }
+
+        #send-btn {
+            background: #58a6ff;
+            color: #0d1117;
+            border: none;
+            padding: 0 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #send-btn:hover {
+            background: #1f6feb;
+            transform: scale(1.05);
+        }
+
+        /* --- Scrollbar Styling --- */
+        #chat::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background-color: rgba(88, 166, 255, 0.4);
+            border-radius: 5px;
+        }
+
+        #chat::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            #chat-container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Medical Chatbot 🤖</h1>
+    <div id="chat-container">
+        <div id="chat"></div>
+        <div id="input-container">
+            <input type="text" id="question" placeholder="Ask your medical question...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chat = document.getElementById('chat');
+        const questionInput = document.getElementById('question');
+        const sendBtn = document.getElementById('send-btn');
+
+        function addMessage(content, className) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${className}`;
+            msgDiv.textContent = content;
+            chat.appendChild(msgDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function sendQuestion() {
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            addMessage(`You: ${question}`, 'user');
+            questionInput.value = '';
+
+            // POST request
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `question=${encodeURIComponent(question)}`
+            });
+
+            const data = await response.json();
+            addMessage(`Bot: ${data.answer}`, 'bot');
+        }
+
+        sendBtn.addEventListener('click', sendQuestion);
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendQuestion();
+        });
+    </script>
+</body>
+</html>
