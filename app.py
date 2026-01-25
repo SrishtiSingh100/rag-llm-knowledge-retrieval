@@ -34,7 +34,8 @@ def ask():
     # Retrieve top relevant documents
     # -----------------------------
     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k":3})
-    docs = retriever.get_relevant_documents(user_question)
+    # ✅ NEW (works)
+    docs = retriever.invoke(user_question)
     
     context = "\n".join([doc.page_content for doc in docs])
     answer = f"Context from medical documents:\n{context}"
